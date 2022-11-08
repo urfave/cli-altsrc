@@ -45,8 +45,8 @@ func ExampleApp_Run_yamlFileLoaderDuration() {
 			Name:        "config",
 			Aliases:     []string{"c"},
 			EnvVars:     []string{"CONFIG_FILE"},
-			Value:       "../testdata/empty.yml",
-			DefaultText: "../testdata/empty.yml",
+			Value:       "testdata/empty.yml",
+			DefaultText: "testdata/empty.yml",
 			Usage:       "config file",
 		},
 		altsrc.NewDurationFlag(
@@ -78,7 +78,7 @@ func ExampleApp_Run_yamlFileLoaderDuration() {
 		},
 	}
 
-	if err := c.Run([]string{"cmd", "serve", "--config", "../testdata/empty.yml"}); err != nil {
+	if err := c.Run([]string{"cmd", "serve", "--config", "testdata/empty.yml"}); err != nil {
 		log.Fatal(err)
 	}
 
