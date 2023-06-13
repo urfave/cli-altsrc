@@ -3,8 +3,8 @@ module github.com/urfave/cli-altsrc/v3
 go 1.18
 
 require (
-	github.com/BurntSushi/toml v1.2.1
-	github.com/urfave/cli/v3 v3.0.0-20221108200634-766786fcc204
+	github.com/BurntSushi/toml v1.3.2
+	github.com/urfave/cli/v3 v3.0.0-alpha3
 	gopkg.in/yaml.v3 v3.0.1
 )
 
