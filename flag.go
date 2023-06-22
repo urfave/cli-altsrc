@@ -1,8 +1,8 @@
 package altsrc
 
+/*
 import (
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"syscall"
 
@@ -62,30 +62,6 @@ func InitInputSourceWithContext(flags []cli.Flag, createInputSource func(cCtx *c
 	}
 }
 
-// ApplyInputSourceValue applies a generic value to the flagSet if required
-func (f *GenericFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
-	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
-		return nil
-	}
-	for _, name := range f.GenericFlag.Names() {
-		if !isc.isSet(name) {
-			continue
-		}
-		value, err := isc.Generic(name)
-		if err != nil {
-			return err
-		}
-		if value == nil {
-			continue
-		}
-		for _, n := range f.Names() {
-			_ = f.set.Set(n, value.String())
-		}
-	}
-
-	return nil
-}
-
 // ApplyInputSourceValue applies a StringSlice value to the flagSet if required
 func (f *StringSliceFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
 	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
@@ -109,6 +85,7 @@ func (f *StringSliceFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSour
 				continue
 			}
 			underlyingFlag.Value = &sliceValue
+			f.set.Set(n, sliceValue.Serialize())
 		}
 		if f.Destination != nil {
 			f.Destination.Set(sliceValue.Serialize())
@@ -179,6 +156,37 @@ func (f *Int64SliceFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourc
 	return nil
 }
 
+// ApplyInputSourceValue applies a Float64Slice value if required
+func (f *Float64SliceFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
+	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
+		return nil
+	}
+	for _, name := range f.Float64SliceFlag.Names() {
+		if !isc.isSet(name) {
+			continue
+		}
+		value, err := isc.Float64Slice(name)
+		if err != nil {
+			return err
+		}
+		if value == nil {
+			continue
+		}
+		var sliceValue = *(cli.NewFloat64Slice(value...))
+		for _, n := range f.Names() {
+			underlyingFlag := f.set.Lookup(n)
+			if underlyingFlag == nil {
+				continue
+			}
+			underlyingFlag.Value = &sliceValue
+		}
+		if f.Destination != nil {
+			f.Destination.Set(sliceValue.Serialize())
+		}
+	}
+	return nil
+}
+
 // ApplyInputSourceValue applies a Bool value to the flagSet if required
 func (f *BoolFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
 	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
@@ -219,36 +227,6 @@ func (f *StringFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceCon
 	return nil
 }
 
-// ApplyInputSourceValue applies a Path value to the flagSet if required
-func (f *PathFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
-	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
-		return nil
-	}
-	for _, name := range f.PathFlag.Names() {
-		if !isc.isSet(name) {
-			continue
-		}
-		value, err := isc.String(name)
-		if err != nil {
-			return err
-		}
-		if value == "" {
-			continue
-		}
-		for _, n := range f.Names() {
-			if !filepath.IsAbs(value) && isc.Source() != "" {
-				basePathAbs, err := filepath.Abs(isc.Source())
-				if err != nil {
-					return err
-				}
-				value = filepath.Join(filepath.Dir(basePathAbs), value)
-			}
-			_ = f.set.Set(n, value)
-		}
-	}
-	return nil
-}
-
 // ApplyInputSourceValue applies a int value to the flagSet if required
 func (f *IntFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
 	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
@@ -264,6 +242,63 @@ func (f *IntFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContex
 		}
 		for _, n := range f.Names() {
 			_ = f.set.Set(n, strconv.FormatInt(int64(value), 10))
+		}
+	}
+	return nil
+}
+
+func (f *Int64Flag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
+	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
+		return nil
+	}
+	for _, name := range f.Int64Flag.Names() {
+		if !isc.isSet(name) {
+			continue
+		}
+		value, err := isc.Int64(name)
+		if err != nil {
+			return err
+		}
+		for _, n := range f.Names() {
+			_ = f.set.Set(n, strconv.FormatInt(value, 10))
+		}
+	}
+	return nil
+}
+
+func (f *UintFlag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
+	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
+		return nil
+	}
+	for _, name := range f.UintFlag.Names() {
+		if !isc.isSet(name) {
+			continue
+		}
+		value, err := isc.Uint(name)
+		if err != nil {
+			return err
+		}
+		for _, n := range f.Names() {
+			_ = f.set.Set(n, strconv.FormatUint(uint64(value), 10))
+		}
+	}
+	return nil
+}
+
+func (f *Uint64Flag) ApplyInputSourceValue(cCtx *cli.Context, isc InputSourceContext) error {
+	if f.set == nil || cCtx.IsSet(f.Name) || isEnvVarSet(f.EnvVars) {
+		return nil
+	}
+	for _, name := range f.Uint64Flag.Names() {
+		if !isc.isSet(name) {
+			continue
+		}
+		value, err := isc.Uint64(name)
+		if err != nil {
+			return err
+		}
+		for _, n := range f.Names() {
+			_ = f.set.Set(n, strconv.FormatUint(value, 10))
 		}
 	}
 	return nil
@@ -326,3 +361,4 @@ func isEnvVarSet(envVars []string) bool {
 func float64ToString(f float64) string {
 	return fmt.Sprintf("%v", f)
 }
+*/

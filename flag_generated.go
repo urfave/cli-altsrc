@@ -84,25 +84,6 @@ func (f *Float64SliceFlag) Apply(set *flag.FlagSet) error {
 	return f.Float64SliceFlag.Apply(set)
 }
 
-// GenericFlag is the flag type that wraps cli.GenericFlag to allow
-// for other values to be specified
-type GenericFlag struct {
-	*cli.GenericFlag
-	set *flag.FlagSet
-}
-
-// NewGenericFlag creates a new GenericFlag
-func NewGenericFlag(fl *cli.GenericFlag) *GenericFlag {
-	return &GenericFlag{GenericFlag: fl, set: nil}
-}
-
-// Apply saves the flagSet for later usage calls, then calls
-// the wrapped GenericFlag.Apply
-func (f *GenericFlag) Apply(set *flag.FlagSet) error {
-	f.set = set
-	return f.GenericFlag.Apply(set)
-}
-
 // IntFlag is the flag type that wraps cli.IntFlag to allow
 // for other values to be specified
 type IntFlag struct {
@@ -122,43 +103,43 @@ func (f *IntFlag) Apply(set *flag.FlagSet) error {
 	return f.IntFlag.Apply(set)
 }
 
-// Int64Flag is the flag type that wraps cli.Int64Flag to allow
-// for other values to be specified
-type Int64Flag struct {
-	*cli.Int64Flag
-	set *flag.FlagSet
-}
+// // Int64Flag is the flag type that wraps cli.Int64Flag to allow
+// // for other values to be specified
+// type Int64Flag struct {
+// 	*cli.Int64Flag
+// 	set *flag.FlagSet
+// }
+//
+// // NewInt64Flag creates a new Int64Flag
+// func NewInt64Flag(fl *cli.Int64Flag) *Int64Flag {
+// 	return &Int64Flag{Int64Flag: fl, set: nil}
+// }
+//
+// // Apply saves the flagSet for later usage calls, then calls
+// // the wrapped Int64Flag.Apply
+// func (f *Int64Flag) Apply(set *flag.FlagSet) error {
+// 	f.set = set
+// 	return f.Int64Flag.Apply(set)
+// }
 
-// NewInt64Flag creates a new Int64Flag
-func NewInt64Flag(fl *cli.Int64Flag) *Int64Flag {
-	return &Int64Flag{Int64Flag: fl, set: nil}
-}
-
-// Apply saves the flagSet for later usage calls, then calls
-// the wrapped Int64Flag.Apply
-func (f *Int64Flag) Apply(set *flag.FlagSet) error {
-	f.set = set
-	return f.Int64Flag.Apply(set)
-}
-
-// Int64SliceFlag is the flag type that wraps cli.Int64SliceFlag to allow
-// for other values to be specified
-type Int64SliceFlag struct {
-	*cli.Int64SliceFlag
-	set *flag.FlagSet
-}
-
-// NewInt64SliceFlag creates a new Int64SliceFlag
-func NewInt64SliceFlag(fl *cli.Int64SliceFlag) *Int64SliceFlag {
-	return &Int64SliceFlag{Int64SliceFlag: fl, set: nil}
-}
-
-// Apply saves the flagSet for later usage calls, then calls
-// the wrapped Int64SliceFlag.Apply
-func (f *Int64SliceFlag) Apply(set *flag.FlagSet) error {
-	f.set = set
-	return f.Int64SliceFlag.Apply(set)
-}
+// // Int64SliceFlag is the flag type that wraps cli.Int64SliceFlag to allow
+// // for other values to be specified
+// type Int64SliceFlag struct {
+// 	*cli.Int64SliceFlag
+// 	set *flag.FlagSet
+// }
+//
+// // NewInt64SliceFlag creates a new Int64SliceFlag
+// func NewInt64SliceFlag(fl *cli.Int64SliceFlag) *Int64SliceFlag {
+// 	return &Int64SliceFlag{Int64SliceFlag: fl, set: nil}
+// }
+//
+// // Apply saves the flagSet for later usage calls, then calls
+// // the wrapped Int64SliceFlag.Apply
+// func (f *Int64SliceFlag) Apply(set *flag.FlagSet) error {
+// 	f.set = set
+// 	return f.Int64SliceFlag.Apply(set)
+// }
 
 // IntSliceFlag is the flag type that wraps cli.IntSliceFlag to allow
 // for other values to be specified
@@ -177,25 +158,6 @@ func NewIntSliceFlag(fl *cli.IntSliceFlag) *IntSliceFlag {
 func (f *IntSliceFlag) Apply(set *flag.FlagSet) error {
 	f.set = set
 	return f.IntSliceFlag.Apply(set)
-}
-
-// PathFlag is the flag type that wraps cli.PathFlag to allow
-// for other values to be specified
-type PathFlag struct {
-	*cli.PathFlag
-	set *flag.FlagSet
-}
-
-// NewPathFlag creates a new PathFlag
-func NewPathFlag(fl *cli.PathFlag) *PathFlag {
-	return &PathFlag{PathFlag: fl, set: nil}
-}
-
-// Apply saves the flagSet for later usage calls, then calls
-// the wrapped PathFlag.Apply
-func (f *PathFlag) Apply(set *flag.FlagSet) error {
-	f.set = set
-	return f.PathFlag.Apply(set)
 }
 
 // StringFlag is the flag type that wraps cli.StringFlag to allow

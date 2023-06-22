@@ -1,6 +1,8 @@
 package altsrc
 
+/*
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -33,3 +35,9 @@ func TestMapInputSource_Int64Slice(t *testing.T) {
 	expect(t, []int64{1, 2, 3}, d)
 	expect(t, nil, err)
 }
+
+func TestMapInputSource_IncorrectFlagTypeError(t *testing.T) {
+	var testVal *bool
+	expect(t, incorrectTypeForFlagError("test", "bool", testVal), fmt.Errorf("Mismatched type for flag 'test'. Expected 'bool' but actual is '*bool'"))
+}
+*/

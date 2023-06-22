@@ -97,7 +97,7 @@ func NewTomlSourceFromFlagFunc(flagFileName string) func(cCtx *cli.Context) (Inp
 }
 
 func readCommandToml(filePath string, container interface{}) (err error) {
-	b, err := loadDataFrom(filePath)
+	b, err := readURI(filePath)
 	if err != nil {
 		return err
 	}

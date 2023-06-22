@@ -2,11 +2,9 @@ package altsrc
 
 import (
 	"fmt"
-	"reflect"
+	"math"
 	"strings"
 	"time"
-
-	"github.com/urfave/cli/v3"
 )
 
 // MapInputSource implements InputSourceContext to return
@@ -127,6 +125,159 @@ func (fsm *MapInputSource) Float64(name string) (float64, error) {
 	return 0, nil
 }
 
+func castToInt64(v interface{}) (int64, bool) {
+	int64Value := int64(0)
+	isType := false
+	if v == nil {
+		return int64Value, true
+	}
+
+	// There are only four cases(int, int64, uint64, float64) when parsing the integer in yaml.v3 pkg
+	// But the cases, uint64, float64, are an error case so that ignored
+	switch value := v.(type) {
+	case int:
+		int64Value = int64(value)
+		isType = true
+	case int64:
+		int64Value = int64(value)
+		isType = true
+	}
+	return int64Value, isType
+}
+
+// Int64 returns an int64 from the map if it exists otherwise returns 0
+func (fsm *MapInputSource) Int64(name string) (int64, error) {
+	otherGenericValue, exists := fsm.valueMap[name]
+	if exists {
+		otherValue, isType := castToInt64(otherGenericValue)
+		if !isType {
+			return 0, incorrectTypeForFlagError(name, "int64", otherGenericValue)
+		}
+		return otherValue, nil
+	}
+	nestedGenericValue, exists := nestedVal(name, fsm.valueMap)
+	if exists {
+		otherValue, isType := castToInt64(otherGenericValue)
+		if !isType {
+			return 0, incorrectTypeForFlagError(name, "int64", nestedGenericValue)
+		}
+		return otherValue, nil
+	}
+
+	return 0, nil
+}
+
+func castToUint(v interface{}) (uint, bool) {
+	uintValue := uint(0)
+	isType := false
+	if v == nil {
+		return uintValue, true
+	}
+
+	// There are only four cases(int, int64, uint64, float64) when parsing the integer in yaml.v3 pkg
+	// But the last case, float64, is an error case so that ignored
+	switch value := v.(type) {
+	case int:
+		intValue := int(value)
+		if intValue >= 0 {
+			uintValue = uint(value)
+			isType = true
+		}
+	case int64:
+		int64Value := int64(value)
+		if int64Value >= 0 && uint64(int64Value) <= math.MaxUint {
+			uintValue = uint(value)
+			isType = true
+		}
+	case uint:
+		uintValue = uint(value)
+		isType = true
+	case uint64:
+		uint64Value := uint64(value)
+		if uint64Value <= math.MaxUint {
+			uintValue = uint(value)
+			isType = true
+		}
+	}
+	return uintValue, isType
+}
+
+// Int64 returns an int64 from the map if it exists otherwise returns 0
+func (fsm *MapInputSource) Uint(name string) (uint, error) {
+	otherGenericValue, exists := fsm.valueMap[name]
+	if exists {
+		otherValue, isType := castToUint(otherGenericValue)
+		if !isType {
+			return 0, incorrectTypeForFlagError(name, "uint", otherGenericValue)
+		}
+		return otherValue, nil
+	}
+	nestedGenericValue, exists := nestedVal(name, fsm.valueMap)
+	if exists {
+		otherValue, isType := castToUint(nestedGenericValue)
+		if !isType {
+			return 0, incorrectTypeForFlagError(name, "uint", nestedGenericValue)
+		}
+		return otherValue, nil
+	}
+
+	return 0, nil
+}
+
+func castToUint64(v interface{}) (uint64, bool) {
+	uint64Value := uint64(0)
+	isType := false
+	if v == nil {
+		return uint64Value, true
+	}
+
+	// There are only four cases(int, int64, uint64, float64) when parsing the integer in yaml.v3 pkg
+	// But the last case, float64, is an error case so that ignored
+	switch value := v.(type) {
+	case int:
+		intValue := int(value)
+		if intValue >= 0 {
+			uint64Value = uint64(intValue)
+			isType = true
+		}
+	case int64:
+		int64Value := int64(value)
+		if int64Value >= 0 {
+			uint64Value = uint64(int64Value)
+			isType = true
+		}
+	case uint:
+		uint64Value = uint64(value)
+		isType = true
+	case uint64:
+		uint64Value = uint64(value)
+		isType = true
+	}
+	return uint64Value, isType
+}
+
+// UInt64 returns an uint64 from the map if it exists otherwise returns 0
+func (fsm *MapInputSource) Uint64(name string) (uint64, error) {
+	otherGenericValue, exists := fsm.valueMap[name]
+	if exists {
+		otherValue, isType := castToUint64(otherGenericValue)
+		if !isType {
+			return 0, incorrectTypeForFlagError(name, "uint64", otherGenericValue)
+		}
+		return otherValue, nil
+	}
+	nestedGenericValue, exists := nestedVal(name, fsm.valueMap)
+	if exists {
+		otherValue, isType := castToUint64(nestedGenericValue)
+		if !isType {
+			return 0, incorrectTypeForFlagError(name, "uint64", nestedGenericValue)
+		}
+		return otherValue, nil
+	}
+
+	return 0, nil
+}
+
 // String returns a string from the map if it exists otherwise returns an empty string
 func (fsm *MapInputSource) String(name string) (string, error) {
 	otherGenericValue, exists := fsm.valueMap[name]
@@ -224,38 +375,43 @@ func (fsm *MapInputSource) Int64Slice(name string) ([]int64, error) {
 
 	var int64Slice = make([]int64, 0, len(otherValue))
 	for i, v := range otherValue {
-		int64Value, isType := v.(int64)
-
+		int64Value, isType := castToInt64(v)
 		if !isType {
-			return nil, incorrectTypeForFlagError(fmt.Sprintf("%s[%d]", name, i), "int", v)
+			return nil, incorrectTypeForFlagError(fmt.Sprintf("%s[%d]", name, i), "int64", v)
 		}
-
 		int64Slice = append(int64Slice, int64Value)
 	}
 
 	return int64Slice, nil
 }
 
-// Generic returns an cli.Generic from the map if it exists otherwise returns nil
-func (fsm *MapInputSource) Generic(name string) (cli.Generic, error) {
+// Float64Slice returns an []float64 from the map if it exists otherwise returns nil
+func (fsm *MapInputSource) Float64Slice(name string) ([]float64, error) {
 	otherGenericValue, exists := fsm.valueMap[name]
-	if exists {
-		otherValue, isType := otherGenericValue.(cli.Generic)
-		if !isType {
-			return nil, incorrectTypeForFlagError(name, "cli.Generic", otherGenericValue)
+	if !exists {
+		otherGenericValue, exists = nestedVal(name, fsm.valueMap)
+		if !exists {
+			return nil, nil
 		}
-		return otherValue, nil
-	}
-	nestedGenericValue, exists := nestedVal(name, fsm.valueMap)
-	if exists {
-		otherValue, isType := nestedGenericValue.(cli.Generic)
-		if !isType {
-			return nil, incorrectTypeForFlagError(name, "cli.Generic", nestedGenericValue)
-		}
-		return otherValue, nil
 	}
 
-	return nil, nil
+	otherValue, isType := otherGenericValue.([]interface{})
+	if !isType {
+		return nil, incorrectTypeForFlagError(name, "[]interface{}", otherGenericValue)
+	}
+
+	var float64Slice = make([]float64, 0, len(otherValue))
+	for i, v := range otherValue {
+		float64Value, isType := v.(float64)
+
+		if !isType {
+			return nil, incorrectTypeForFlagError(fmt.Sprintf("%s[%d]", name, i), "int", v)
+		}
+
+		float64Slice = append(float64Slice, float64Value)
+	}
+
+	return float64Slice, nil
 }
 
 // Bool returns an bool from the map otherwise returns false
@@ -290,11 +446,5 @@ func (fsm *MapInputSource) isSet(name string) bool {
 }
 
 func incorrectTypeForFlagError(name, expectedTypeName string, value interface{}) error {
-	valueType := reflect.TypeOf(value)
-	valueTypeName := ""
-	if valueType != nil {
-		valueTypeName = valueType.Name()
-	}
-
-	return fmt.Errorf("Mismatched type for flag '%s'. Expected '%s' but actual is '%s'", name, expectedTypeName, valueTypeName)
+	return fmt.Errorf("Mismatched type for flag '%s'. Expected '%s' but actual is '%T'", name, expectedTypeName, value)
 }
