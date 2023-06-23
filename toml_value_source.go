@@ -7,6 +7,8 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// TOML is a helper function to encapsulate a number of
+// tomlValueSource together as a cli.ValueSourceChain
 func TOML(key string, paths ...string) cli.ValueSourceChain {
 	vsc := cli.ValueSourceChain{Chain: []cli.ValueSource{}}
 
@@ -40,7 +42,7 @@ func (tvs *tomlValueSource) Lookup() (string, bool) {
 }
 
 func (tvs *tomlValueSource) String() string {
-	return fmt.Sprintf("yaml file %[1]q at key %[2]q", tvs.file, tvs.key)
+	return fmt.Sprintf("toml file %[1]q at key %[2]q", tvs.file, tvs.key)
 }
 
 func (tvs *tomlValueSource) GoString() string {

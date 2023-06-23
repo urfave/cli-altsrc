@@ -10,8 +10,6 @@ github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-github.com/urfave/cli/v3 v3.0.0-alpha3 h1:X5l0kjXlvKe3ExllWbcMisze3jDQl98/URz/6uGF3V4=
-github.com/urfave/cli/v3 v3.0.0-alpha3/go.mod h1:gHI/xEYplFhOa3Y90xJleh3kqqsSanBj/19hVFxiVZ4=
 github.com/urfave/cli/v3 v3.0.0-alpha4 h1:RJFGIs3mcalmc2YgliDh0Pa4l79S+Dqdz7cW8Fcp7Rg=
 github.com/urfave/cli/v3 v3.0.0-alpha4/go.mod h1:ZFqSEHhze0duJACOdz43I5IcnKhf4RoTlOoUMBUggOI=
 github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 h1:bAn7/zixMGCfxrRTfdpNzjtPYqr8smhKouy9mxVdGPU=
