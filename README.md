@@ -1,3 +1,3 @@
 # cli-altsrc
 
-Configuration source integration library for urfave/cli
+Configuration source integration library for urfave/cli/v3
