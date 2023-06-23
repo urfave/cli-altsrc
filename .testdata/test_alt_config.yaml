@@ -1,0 +1,4 @@
+water_fountain:
+  water: true
+phone_booth:
+  phone: false
