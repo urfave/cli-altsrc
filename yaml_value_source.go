@@ -13,6 +13,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// JSON is a helper function that wraps the YAML helper function
+// and loads via yaml.Unmarshal
+func JSON(key string, paths ...string) cli.ValueSourceChain {
+	return YAML(key, paths...)
+}
+
 // YAML is a helper function to encapsulate a number of
 // yamlValueSource together as a cli.ValueSourceChain
 func YAML(key string, paths ...string) cli.ValueSourceChain {
