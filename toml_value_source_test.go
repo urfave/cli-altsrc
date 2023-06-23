@@ -1,7 +1,6 @@
 package altsrc
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -11,26 +10,8 @@ import (
 func TestTOML(t *testing.T) {
 	r := require.New(t)
 
-	tmpDir := t.TempDir()
-
-	configPath := filepath.Join(tmpDir, "config.toml")
-	altConfigPath := filepath.Join(tmpDir, "alt-config.toml")
-
-	r.NoError(os.WriteFile(configPath, []byte(`
-[water_fountain]
-water = false
-
-[woodstock]
-wood = false
-`), 0644))
-
-	r.NoError(os.WriteFile(altConfigPath, []byte(`
-[water_fountain]
-water = true
-
-[phone_booth]
-phone = false
-`), 0644))
+	configPath := filepath.Join(testdataDir, "test_config.toml")
+	altConfigPath := filepath.Join(testdataDir, "test_alt_config.toml")
 
 	vsc := TOML(
 		"water_fountain.water",
@@ -41,4 +22,8 @@ phone = false
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
 	r.True(ok)
+
+	tvs := vsc.Chain[0].(*tomlValueSource)
+	r.Equal("toml file \"/dev/null/nonexistent.toml\" at key \"water_fountain.water\"", tvs.String())
+	r.Equal("&tomlValueSource{file:\"/dev/null/nonexistent.toml\",keyPath:\"water_fountain.water\"}", tvs.GoString())
 }

@@ -20,7 +20,6 @@ func YAML(key string, paths ...string) cli.ValueSourceChain {
 				key:  key,
 				maafsc: mapAnyAnyFileSourceCache{
 					file: path,
-					nf:   newMapAnyAny,
 					f:    yamlUnmarshalFile,
 				},
 			},
@@ -50,7 +49,7 @@ func (yvs *yamlValueSource) String() string {
 }
 
 func (yvs *yamlValueSource) GoString() string {
-	return fmt.Sprintf("&yamlValueSource{file:%[1]q,keyPath:%[2]q", yvs.file, yvs.key)
+	return fmt.Sprintf("&yamlValueSource{file:%[1]q,keyPath:%[2]q}", yvs.file, yvs.key)
 }
 
 func yamlUnmarshalFile(filePath string, container any) error {

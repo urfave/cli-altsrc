@@ -1,7 +1,6 @@
 package altsrc
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -11,32 +10,8 @@ import (
 func TestJSON(t *testing.T) {
 	r := require.New(t)
 
-	tmpDir := t.TempDir()
-
-	configPath := filepath.Join(tmpDir, "config.json")
-	altConfigPath := filepath.Join(tmpDir, "alt-config.json")
-
-	r.NoError(os.WriteFile(configPath, []byte(`
-{
-  "water_fountain": {
-    "water": false
-  },
-  "woodstock": {
-    "wood": false
-  }
-}
-`), 0644))
-
-	r.NoError(os.WriteFile(altConfigPath, []byte(`
-{
-  "water_fountain": {
-    "water": true
-  },
-  "phone_booth": {
-    "phone": false
-  }
-}
-`), 0644))
+	configPath := filepath.Join(testdataDir, "test_config.json")
+	altConfigPath := filepath.Join(testdataDir, "test_alt_config.json")
 
 	vsc := YAML(
 		"water_fountain.water",
@@ -47,4 +22,8 @@ func TestJSON(t *testing.T) {
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
 	r.True(ok)
+
+	yvs := vsc.Chain[0].(*yamlValueSource)
+	r.Equal("yaml file \"/dev/null/nonexistent.json\" at key \"water_fountain.water\"", yvs.String())
+	r.Equal("&yamlValueSource{file:\"/dev/null/nonexistent.json\",keyPath:\"water_fountain.water\"}", yvs.GoString())
 }

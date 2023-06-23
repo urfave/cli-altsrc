@@ -4,37 +4,22 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 	"time"
 
 	altsrc "github.com/urfave/cli-altsrc/v3"
+	"github.com/urfave/cli-altsrc/v3/internal"
 	"github.com/urfave/cli/v3"
 )
 
 var (
-	testdataDir string
+	testdataDir = func() string {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		return internal.MustTestdataDir(ctx)
+	}()
 )
-
-func init() {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	if err := setup(ctx); err != nil {
-		panic(err)
-	}
-}
-
-func setup(ctx context.Context) error {
-	topBytes, err := exec.CommandContext(ctx, "git", "rev-parse", "--show-toplevel").Output()
-	if err != nil {
-		return err
-	}
-
-	testdataDir = filepath.Join(strings.TrimSpace(string(topBytes)), ".testdata")
-	return nil
-}
 
 func ExampleYAML() {
 	configFiles := []string{

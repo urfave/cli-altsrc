@@ -1,6 +1,7 @@
 package altsrc
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,6 +12,8 @@ import (
 )
 
 var (
+	Err = errors.New("urfave/cli-altsrc error")
+
 	isTracingOn = os.Getenv("URFAVE_CLI_TRACING") == "on"
 )
 
@@ -42,8 +45,8 @@ func tracef(format string, a ...any) {
 	)
 }
 
-func readURI(filePath string) ([]byte, error) {
-	u, err := url.Parse(filePath)
+func readURI(uriString string) ([]byte, error) {
+	u, err := url.Parse(uriString)
 	if err != nil {
 		return nil, err
 	}
@@ -51,34 +54,29 @@ func readURI(filePath string) ([]byte, error) {
 	if u.Host != "" { // i have a host, now do i support the scheme?
 		switch u.Scheme {
 		case "http", "https":
-			res, err := http.Get(filePath)
+			res, err := http.Get(uriString)
 			if err != nil {
 				return nil, err
 			}
 			return io.ReadAll(res.Body)
 		default:
-			return nil, fmt.Errorf("scheme of %s is unsupported", filePath)
+			return nil, fmt.Errorf("%[1]w: scheme of %[2]q is unsupported", Err, uriString)
 		}
-	} else if u.Path != "" { // i dont have a host, but I have a path. I am a local file.
-		if _, notFoundFileErr := os.Stat(filePath); notFoundFileErr != nil {
-			return nil, fmt.Errorf("Cannot read from file: '%s' because it does not exist.", filePath)
+	} else if u.Path != "" ||
+		(runtime.GOOS == "windows" && strings.Contains(u.String(), "\\")) {
+		if _, notFoundFileErr := os.Stat(uriString); notFoundFileErr != nil {
+			return nil, fmt.Errorf("%[1]w: cannot read from %[2]q because it does not exist", Err, uriString)
 		}
-		return os.ReadFile(filePath)
-	} else if runtime.GOOS == "windows" && strings.Contains(u.String(), "\\") {
-		// on Windows systems u.Path is always empty, so we need to check the string directly.
-		if _, notFoundFileErr := os.Stat(filePath); notFoundFileErr != nil {
-			return nil, fmt.Errorf("Cannot read from file: '%s' because it does not exist.", filePath)
-		}
-		return os.ReadFile(filePath)
+		return os.ReadFile(uriString)
 	}
 
-	return nil, fmt.Errorf("unable to determine how to load from path %s", filePath)
+	return nil, fmt.Errorf("%[1]w: unable to determine how to load from %[2]q", Err, uriString)
 }
 
 // nestedVal checks if the name has '.' delimiters.
 // If so, it tries to traverse the tree by the '.' delimited sections to find
 // a nested value for the key.
-func nestedVal(name string, tree map[interface{}]interface{}) (interface{}, bool) {
+func nestedVal(name string, tree map[any]any) (any, bool) {
 	if sections := strings.Split(name, "."); len(sections) > 1 {
 		node := tree
 		for _, section := range sections[:len(sections)-1] {
@@ -88,12 +86,12 @@ func nestedVal(name string, tree map[interface{}]interface{}) (interface{}, bool
 			}
 
 			switch child := child.(type) {
-			case map[string]interface{}:
-				node = make(map[interface{}]interface{}, len(child))
+			case map[string]any:
+				node = make(map[any]any, len(child))
 				for k, v := range child {
 					node[k] = v
 				}
-			case map[interface{}]interface{}:
+			case map[any]any:
 				node = child
 			default:
 				return nil, false
@@ -103,5 +101,6 @@ func nestedVal(name string, tree map[interface{}]interface{}) (interface{}, bool
 			return val, true
 		}
 	}
+
 	return nil, false
 }
