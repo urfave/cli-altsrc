@@ -44,7 +44,7 @@ greet:
 	return nil
 }
 
-func ExampleYAMLValueSource() {
+func ExampleYAML_valueSource() {
 	configFiles := []string{
 		filepath.Join(tmpDir, "config.yaml"),
 		filepath.Join(tmpDir, "alt-config.yaml"),
