@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	altsrc "github.com/urfave/cli-altsrc"
+	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli/v3"
 )
 
