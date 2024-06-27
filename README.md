@@ -9,3 +9,45 @@ YAML, and TOML. The primary reason for this to be a separate library is that thi
 features which are otherwise not used throughout [`urfave/cli/v3`].
 
 [`urfave/cli/v3`]: https://github.com/urfave/cli
+
+### Example
+
+```go
+configFiles := []string{
+	filepath.Join(testdataDir, "config.yaml"),
+	filepath.Join(testdataDir, "alt-config.yaml"),
+}
+
+app := &cli.Command{
+	Name: "greet",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:    "name",
+			Aliases: []string{"n"},
+			Sources: altsrc.YAML("greet.name", configFiles...),
+		},
+		&cli.IntFlag{
+			Name:    "enthusiasm",
+			Aliases: []string{"!"},
+			Sources: altsrc.YAML("greet.enthusiasm", configFiles...),
+		},
+	},
+	Action: func(cCtx *cli.Context) error {
+		punct := ""
+		if cCtx.Int("enthusiasm") > 9000 {
+			punct = "!"
+		}
+
+		fmt.Fprintf(os.Stdout, "Hello, %[1]v%[2]v\n", cCtx.String("name"), punct)
+
+		return nil
+	},
+}
+
+// Simulating os.Args
+os.Args = []string{"greet"}
+
+if err := app.Run(context.Background(), os.Args); err != nil {
+	fmt.Fprintf(os.Stdout, "OH NO: %[1]v\n", err)
+}
+```
