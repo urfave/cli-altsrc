@@ -19,7 +19,7 @@ func YAML(key string, paths ...string) cli.ValueSourceChain {
 			&yamlValueSource{
 				file:   path,
 				key:    key,
-				maafsc: altsrc.NewMapAnyAnyFileSourceCache(path, yamlUnmarshalFile),
+				maafsc: altsrc.NewMapAnyAnyFileSourceCache(path, yaml.Unmarshal),
 			},
 		)
 	}
@@ -48,17 +48,4 @@ func (yvs *yamlValueSource) String() string {
 
 func (yvs *yamlValueSource) GoString() string {
 	return fmt.Sprintf("&yamlValueSource{file:%[1]q,keyPath:%[2]q}", yvs.file, yvs.key)
-}
-
-func yamlUnmarshalFile(filePath string, container any) error {
-	b, err := altsrc.ReadURI(filePath)
-	if err != nil {
-		return err
-	}
-
-	if err := yaml.Unmarshal(b, container); err != nil {
-		return err
-	}
-
-	return nil
 }

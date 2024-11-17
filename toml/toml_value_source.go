@@ -21,7 +21,7 @@ func TOML(key string, paths ...string) cli.ValueSourceChain {
 			&tomlValueSource{
 				file: path,
 				key:  key,
-				tmc:  *altsrc.NewFileSourceCache[tomlMap](path, tomlUnmarshalFile),
+				tmc:  *altsrc.NewFileSourceCache[tomlMap](path, toml.Unmarshal),
 			},
 		)
 	}
@@ -50,17 +50,4 @@ func (tvs *tomlValueSource) String() string {
 
 func (tvs *tomlValueSource) GoString() string {
 	return fmt.Sprintf("&tomlValueSource{file:%[1]q,keyPath:%[2]q}", tvs.file, tvs.key)
-}
-
-func tomlUnmarshalFile(filePath string, container any) error {
-	b, err := altsrc.ReadURI(filePath)
-	if err != nil {
-		return err
-	}
-
-	if err := toml.Unmarshal(b, container); err != nil {
-		return err
-	}
-
-	return nil
 }

@@ -1,25 +1,27 @@
 package altsrc
 
 type FileSourceCache[T any] struct {
-	file string
-	m    *T
-	f    func(string, any) error
+	file         string
+	m            *T
+	unmarshaller func([]byte, any) error
 }
 
-func NewFileSourceCache[T any](file string, f func(string, any) error) *FileSourceCache[T] {
+func NewFileSourceCache[T any](file string, f func([]byte, any) error) *FileSourceCache[T] {
 	return &FileSourceCache[T]{
-		file: file,
-		f:    f,
+		file:         file,
+		unmarshaller: f,
 	}
 }
 
 func (fsc *FileSourceCache[T]) Get() T {
 	if fsc.m == nil {
 		res := new(T)
-		if err := fsc.f(fsc.file, res); err == nil {
-			fsc.m = res
-		} else {
+		if b, err := ReadURI(fsc.file); err != nil {
+			tracef("failed to read uri %[1]q: %[2]v", fsc.file, err)
+		} else if err := fsc.unmarshaller(b, res); err != nil {
 			tracef("failed to unmarshal from file %[1]q: %[2]v", fsc.file, err)
+		} else {
+			fsc.m = res
 		}
 	}
 
@@ -34,6 +36,6 @@ func (fsc *FileSourceCache[T]) Get() T {
 
 type MapAnyAnyFileSourceCache = FileSourceCache[map[any]any]
 
-func NewMapAnyAnyFileSourceCache(file string, f func(string, any) error) *MapAnyAnyFileSourceCache {
+func NewMapAnyAnyFileSourceCache(file string, f func([]byte, any) error) *MapAnyAnyFileSourceCache {
 	return NewFileSourceCache[map[any]any](file, f)
 }
