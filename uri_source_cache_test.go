@@ -3,10 +3,62 @@ package altsrc
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestReadURI(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		err  string
+	}{
+		{
+			name: "Empty path",
+			err:  fmt.Sprintf("%s: unable to determine how to load from \"\"", Err),
+		},
+		{
+			name: "Invalid file path",
+			path: filepath.Join(testdataDir, "action.zzzz"),
+			err:  fmt.Sprintf("%s: cannot read from", Err),
+		},
+		{
+			name: "valid file path",
+			path: filepath.Join(testdataDir, "alt-config.json"),
+		},
+		{
+			name: "Unknown URI",
+			path: "ftp://github.com",
+			err:  "is unsupported",
+		},
+		{
+			name: "Invalid http URL",
+			path: "http://foo",
+			err:  "no such host",
+		},
+		{
+			name: "valid http URL",
+			path: "http://github.com",
+		},
+		{
+			name: "valid https URL",
+			path: "https://github.com",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := readURI(test.path)
+			if test.err != "" {
+				assert.ErrorContains(t, err, test.err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
 
 func TestURISourceCache(t *testing.T) {
 	tests := []struct {
