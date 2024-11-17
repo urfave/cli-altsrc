@@ -3,6 +3,9 @@ package altsrc
 import (
 	"fmt"
 	"reflect"
+
+	altsrc "github.com/urfave/cli-altsrc/toml"
+	altsrc "github.com/urfave/cli-altsrc/v3"
 )
 
 type tomlMap struct {
@@ -62,7 +65,7 @@ func unmarshalMap(i any) (ret map[any]any, err error) {
 		case reflect.Array, reflect.Slice:
 			ret[key] = val.([]any)
 		default:
-			return nil, fmt.Errorf("%[1]w: unsupported type %#[2]v", err, v.Kind())
+			return nil, fmt.Errorf("%[1]w: unsupported type %#[2]v", altsrc.Err, v.Kind())
 		}
 	}
 	return ret, nil
