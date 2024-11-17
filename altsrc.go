@@ -45,7 +45,7 @@ func tracef(format string, a ...any) {
 	)
 }
 
-func ReadURI(uriString string) ([]byte, error) {
+func readURI(uriString string) ([]byte, error) {
 	u, err := url.Parse(uriString)
 	if err != nil {
 		return nil, err

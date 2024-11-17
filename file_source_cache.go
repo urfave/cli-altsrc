@@ -16,7 +16,7 @@ func NewFileSourceCache[T any](file string, f func([]byte, any) error) *FileSour
 func (fsc *FileSourceCache[T]) Get() T {
 	if fsc.m == nil {
 		res := new(T)
-		if b, err := ReadURI(fsc.file); err != nil {
+		if b, err := readURI(fsc.file); err != nil {
 			tracef("failed to read uri %[1]q: %[2]v", fsc.file, err)
 		} else if err := fsc.unmarshaller(b, res); err != nil {
 			tracef("failed to unmarshal from file %[1]q: %[2]v", fsc.file, err)
