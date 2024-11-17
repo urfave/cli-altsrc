@@ -45,7 +45,7 @@ func tracef(format string, a ...any) {
 	)
 }
 
-func readURI(uriString string) ([]byte, error) {
+func ReadURI(uriString string) ([]byte, error) {
 	u, err := url.Parse(uriString)
 	if err != nil {
 		return nil, err
@@ -73,10 +73,10 @@ func readURI(uriString string) ([]byte, error) {
 	return nil, fmt.Errorf("%[1]w: unable to determine how to load from %[2]q", Err, uriString)
 }
 
-// nestedVal checks if the name has '.' delimiters.
+// NestedVal checks if the name has '.' delimiters.
 // If so, it tries to traverse the tree by the '.' delimited sections to find
 // a nested value for the key.
-func nestedVal(name string, tree map[any]any) (any, bool) {
+func NestedVal(name string, tree map[any]any) (any, bool) {
 	if sections := strings.Split(name, "."); len(sections) > 1 {
 		node := tree
 		for _, section := range sections[:len(sections)-1] {

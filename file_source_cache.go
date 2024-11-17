@@ -1,12 +1,19 @@
 package altsrc
 
-type fileSourceCache[T any] struct {
+type FileSourceCache[T any] struct {
 	file string
 	m    *T
 	f    func(string, any) error
 }
 
-func (fsc *fileSourceCache[T]) Get() T {
+func NewFileSourceCache[T any](file string, f func(string, any) error) *FileSourceCache[T] {
+	return &FileSourceCache[T]{
+		file: file,
+		f:    f,
+	}
+}
+
+func (fsc *FileSourceCache[T]) Get() T {
 	if fsc.m == nil {
 		res := new(T)
 		if err := fsc.f(fsc.file, res); err == nil {
@@ -25,6 +32,8 @@ func (fsc *fileSourceCache[T]) Get() T {
 	return *fsc.m
 }
 
-type mapAnyAnyFileSourceCache = fileSourceCache[map[any]any]
+type MapAnyAnyFileSourceCache = FileSourceCache[map[any]any]
 
-type tomlMapFileSourceCache = fileSourceCache[tomlMap]
+func NewMapAnyAnyFileSourceCache(file string, f func(string, any) error) *MapAnyAnyFileSourceCache {
+	return NewFileSourceCache[map[any]any](file, f)
+}

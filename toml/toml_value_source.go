@@ -4,8 +4,11 @@ import (
 	"fmt"
 
 	"github.com/BurntSushi/toml"
+	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli/v3"
 )
+
+type tomlMapFileSourceCache = altsrc.FileSourceCache[tomlMap]
 
 // TOML is a helper function to encapsulate a number of
 // tomlValueSource together as a cli.ValueSourceChain
@@ -18,10 +21,7 @@ func TOML(key string, paths ...string) cli.ValueSourceChain {
 			&tomlValueSource{
 				file: path,
 				key:  key,
-				tmc: tomlMapFileSourceCache{
-					file: path,
-					f:    tomlUnmarshalFile,
-				},
+				tmc:  *altsrc.NewFileSourceCache[tomlMap](path, tomlUnmarshalFile),
 			},
 		)
 	}
@@ -37,7 +37,7 @@ type tomlValueSource struct {
 }
 
 func (tvs *tomlValueSource) Lookup() (string, bool) {
-	if v, ok := nestedVal(tvs.key, tvs.tmc.Get().Map); ok {
+	if v, ok := altsrc.NestedVal(tvs.key, tvs.tmc.Get().Map); ok {
 		return fmt.Sprintf("%[1]v", v), ok
 	}
 
@@ -53,7 +53,7 @@ func (tvs *tomlValueSource) GoString() string {
 }
 
 func tomlUnmarshalFile(filePath string, container any) error {
-	b, err := readURI(filePath)
+	b, err := altsrc.ReadURI(filePath)
 	if err != nil {
 		return err
 	}
