@@ -1,4 +1,4 @@
-package altsrc_test
+package toml_test
 
 import (
 	"context"

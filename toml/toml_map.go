@@ -1,10 +1,9 @@
-package altsrc
+package toml
 
 import (
 	"fmt"
 	"reflect"
 
-	altsrc "github.com/urfave/cli-altsrc/toml"
 	altsrc "github.com/urfave/cli-altsrc/v3"
 )
 

@@ -1,4 +1,4 @@
-package altsrc
+package toml
 
 import (
 	"context"
