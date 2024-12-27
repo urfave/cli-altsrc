@@ -1,10 +1,22 @@
-package altsrc
+package yaml
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
+	altsrc "github.com/urfave/cli-altsrc/v3"
+)
+
+var (
+	testdataDir = func() string {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		return altsrc.MustTestdataDir(ctx)
+	}()
 )
 
 func TestYAML(t *testing.T) {

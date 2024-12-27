@@ -1,9 +1,12 @@
-package altsrc
+package json
 
-import "github.com/urfave/cli/v3"
+import (
+	yaml "github.com/urfave/cli-altsrc/yaml"
+	"github.com/urfave/cli/v3"
+)
 
 // JSON is a helper function that wraps the YAML helper function
 // and loads via yaml.Unmarshal
 func JSON(key string, paths ...string) cli.ValueSourceChain {
-	return YAML(key, paths...)
+	return yaml.YAML(key, paths...)
 }
