@@ -4,9 +4,8 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/urfave/cli-altsrc/v3.svg)](https://pkg.go.dev/github.com/urfave/cli-altsrc/v3)
 [![Go Report Card](https://goreportcard.com/badge/github.com/urfave/cli-altsrc/v3)](https://goreportcard.com/report/github.com/urfave/cli-altsrc/v3)
 
-[`urfave/cli-altsrc/v3`](https://pkg.go.dev/github.com/urfave/cli-altsrc/v3) is an extended value source integration library for [`urfave/cli/v3`] with support for JSON,
-YAML, and TOML. The primary reason for this to be a separate library is that third-party libraries are used for these
-features which are otherwise not used throughout [`urfave/cli/v3`].
+[`urfave/cli-altsrc/v3`](https://pkg.go.dev/github.com/urfave/cli-altsrc/v3) is an extension for [`urfave/cli/v3`] to read
+flag values from JSON, YAML, and TOML. The extension keeps third-party libraries for these features away from [`urfave/cli/v3`].
 
 [`urfave/cli/v3`]: https://github.com/urfave/cli
 
