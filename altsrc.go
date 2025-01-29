@@ -42,12 +42,19 @@ func tracef(format string, a ...any) {
 	)
 }
 
-// NestedVal checks if the name has '.' delimiters.
-// If so, it tries to traverse the tree by the '.' delimited sections to find
+// NestedVal returns a value from the given map. The lookup name may be a dot-separated path into the map.
+// If that is the case, it will recursively traverse the map based on the '.' delimited sections to find
 // a nested value for the key.
 func NestedVal(name string, tree map[any]any) (any, bool) {
-	if sections := strings.Split(name, "."); len(sections) > 1 {
-		node := tree
+	sections := strings.Split(name, ".")
+	if name == "" || len(sections) == 0 {
+		return nil, false
+	}
+
+	node := tree
+
+	// traverse into the map based on the dot-separated sections
+	if len(sections) >= 2 { // the last section is the value we want, we will return it directly at the end
 		for _, section := range sections[:len(sections)-1] {
 			child, ok := node[section]
 			if !ok {
@@ -66,10 +73,10 @@ func NestedVal(name string, tree map[any]any) (any, bool) {
 				return nil, false
 			}
 		}
-		if val, ok := node[sections[len(sections)-1]]; ok {
-			return val, true
-		}
 	}
 
+	if val, ok := node[sections[len(sections)-1]]; ok {
+		return val, true
+	}
 	return nil, false
 }
