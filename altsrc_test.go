@@ -19,11 +19,11 @@ var (
 
 func TestNestedVal(t *testing.T) {
 	tests := []struct {
-		name string
-		key  string
-		m    map[any]any
-		val  any
-		b    bool
+		name  string
+		key   string
+		m     map[any]any
+		val   any
+		found bool
 	}{
 		{
 			name: "No map no key",
@@ -49,6 +49,15 @@ func TestNestedVal(t *testing.T) {
 			},
 		},
 		{
+			name: "Level 1",
+			key:  "foobar",
+			m: map[any]any{
+				"foobar": 10,
+			},
+			val:   10,
+			found: true,
+		},
+		{
 			name: "Level 2",
 			key:  "foo.bar",
 			m: map[any]any{
@@ -56,8 +65,8 @@ func TestNestedVal(t *testing.T) {
 					"bar": 10,
 				},
 			},
-			val: 10,
-			b:   true,
+			val:   10,
+			found: true,
 		},
 		{
 			name: "Level 2 invalid key",
@@ -65,6 +74,15 @@ func TestNestedVal(t *testing.T) {
 			m: map[any]any{
 				"foo": map[any]any{
 					"bar": 10,
+				},
+			},
+		},
+		{
+			name: "Level 2 string map type",
+			key:  "foo.bar1",
+			m: map[any]any{
+				"foo": map[string]any{
+					"bar": "10",
 				},
 			},
 		},
@@ -87,8 +105,8 @@ func TestNestedVal(t *testing.T) {
 					},
 				},
 			},
-			val: "sss",
-			b:   true,
+			val:   "sss",
+			found: true,
 		},
 		{
 			name: "Level 3 invalid key",
@@ -124,15 +142,15 @@ func TestNestedVal(t *testing.T) {
 					},
 				},
 			},
-			val: []int{10},
-			b:   true,
+			val:   []int{10},
+			found: true,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			val, b := NestedVal(test.key, test.m)
-			if !test.b {
+			if !test.found {
 				assert.False(t, b)
 			} else {
 				assert.True(t, b)

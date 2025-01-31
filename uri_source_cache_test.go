@@ -36,7 +36,12 @@ func TestReadURI(t *testing.T) {
 		{
 			name: "Invalid http URL",
 			path: "http://foo",
-			err:  "no such host",
+
+			// locally we get: "dial tcp: lookup foo: no such host"
+			// but on CI local networks are disabled,
+			// so the error is: "dial tcp: lookup foo on 127.0.0.11:53: server misbehaving"
+			// therefore let's check for the "lookup foo", which is in both errors
+			err: "lookup foo",
 		},
 		{
 			name: "valid http URL",
