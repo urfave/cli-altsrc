@@ -22,9 +22,9 @@ var (
 )
 
 func ExampleTOML() {
-	configFiles := []string{
-		filepath.Join(testdataDir, "config.toml"),
-		filepath.Join(testdataDir, "alt-config.toml"),
+	configFiles := []altsrc.Sourcer{
+		altsrc.StringSourcer(filepath.Join(testdataDir, "config.toml")),
+		altsrc.StringSourcer(filepath.Join(testdataDir, "alt-config.toml")),
 	}
 
 	app := &cli.Command{

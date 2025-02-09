@@ -22,9 +22,9 @@ var (
 )
 
 func ExampleYAML() {
-	configFiles := []string{
-		filepath.Join(testdataDir, "config.yaml"),
-		filepath.Join(testdataDir, "alt-config.yaml"),
+	configFiles := []altsrc.Sourcer{
+		altsrc.StringSourcer(filepath.Join(testdataDir, "config.yaml")),
+		altsrc.StringSourcer(filepath.Join(testdataDir, "alt-config.yaml")),
 	}
 
 	app := &cli.Command{

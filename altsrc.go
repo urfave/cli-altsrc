@@ -6,6 +6,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -79,4 +81,73 @@ func NestedVal(name string, tree map[any]any) (any, bool) {
 		return val, true
 	}
 	return nil, false
+}
+
+type Sourcer interface {
+	SourceURI() string
+}
+
+type StringSourcer string
+
+func (s StringSourcer) SourceURI() string {
+	return string(s)
+}
+
+type StringPtrSourcer struct {
+	ptr *string
+}
+
+func NewStringPtrSourcer(p *string) StringPtrSourcer {
+	return StringPtrSourcer{
+		ptr: p,
+	}
+}
+
+func (s StringPtrSourcer) SourceURI() string {
+	return *s.ptr
+}
+
+type valueSource struct {
+	key     string
+	desc    string
+	sourcer Sourcer
+	um      func([]byte, any) error
+}
+
+func (vs *valueSource) Lookup() (string, bool) {
+	maafsc := NewMapAnyAnyURISourceCache(vs.sourcer.SourceURI(), vs.um)
+	if v, ok := NestedVal(vs.key, maafsc.Get()); ok {
+		return fmt.Sprintf("%[1]v", v), ok
+	}
+
+	return "", false
+}
+
+func (vs *valueSource) String() string {
+	return fmt.Sprintf("%s file %[2]q at key %[3]q", vs.desc, vs.sourcer.SourceURI(), vs.key)
+}
+
+func (vs *valueSource) GoString() string {
+	return fmt.Sprintf("%sValueSource{file:%[2]q,keyPath:%[3]q}", vs.desc, vs.sourcer.SourceURI(), vs.key)
+}
+
+func NewValueSource(f func([]byte, any) error, desc string, key string, uriSrc Sourcer) cli.ValueSource {
+	return &valueSource{
+		sourcer: uriSrc,
+		key:     key,
+		desc:    desc,
+		um:      f,
+	}
+}
+
+func NewValueSourceChain(f func([]byte, any) error, desc string, key string, uris ...Sourcer) cli.ValueSourceChain {
+	vs := []cli.ValueSource{}
+
+	for _, uri := range uris {
+		vs = append(vs, NewValueSource(f, desc, key, uri))
+	}
+
+	return cli.ValueSourceChain{
+		Chain: vs,
+	}
 }
