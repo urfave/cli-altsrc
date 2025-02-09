@@ -27,15 +27,15 @@ func TestTOML(t *testing.T) {
 
 	vsc := TOML(
 		"water_fountain.water",
-		"/dev/null/nonexistent.toml",
-		configPath,
-		altConfigPath,
+		altsrc.StringSourcer("/dev/null/nonexistent.toml"),
+		altsrc.StringSourcer(configPath),
+		altsrc.StringSourcer(altConfigPath),
 	)
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
 	r.True(ok)
 
-	tvs := vsc.Chain[0].(*tomlValueSource)
+	tvs := vsc.Chain[0]
 	r.Equal("toml file \"/dev/null/nonexistent.toml\" at key \"water_fountain.water\"", tvs.String())
-	r.Equal("&tomlValueSource{file:\"/dev/null/nonexistent.toml\",keyPath:\"water_fountain.water\"}", tvs.GoString())
+	r.Equal("tomlValueSource{file:\"/dev/null/nonexistent.toml\",keyPath:\"water_fountain.water\"}", tvs.GoString())
 }
