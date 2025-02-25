@@ -28,9 +28,9 @@ func TestJSON(t *testing.T) {
 
 	vsc := yaml.YAML(
 		"water_fountain.water",
-		"/dev/null/nonexistent.json",
-		configPath,
-		altConfigPath,
+		altsrc.StringSourcer("/dev/null/nonexistent.json"),
+		altsrc.StringSourcer(configPath),
+		altsrc.StringSourcer(altConfigPath),
 	)
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
@@ -38,5 +38,5 @@ func TestJSON(t *testing.T) {
 
 	yvs := vsc.Chain[0]
 	r.Equal("yaml file \"/dev/null/nonexistent.json\" at key \"water_fountain.water\"", yvs.String())
-	r.Equal("&yamlValueSource{file:\"/dev/null/nonexistent.json\",keyPath:\"water_fountain.water\"}", yvs.GoString())
+	r.Equal("yamlValueSource{file:\"/dev/null/nonexistent.json\",keyPath:\"water_fountain.water\"}", yvs.GoString())
 }

@@ -22,9 +22,9 @@ var (
 )
 
 func ExampleJSON() {
-	configFiles := []string{
-		filepath.Join(testdataDir, "config.json"),
-		filepath.Join(testdataDir, "alt-config.json"),
+	configFiles := []altsrc.Sourcer{
+		altsrc.StringSourcer(filepath.Join(testdataDir, "config.json")),
+		altsrc.StringSourcer(filepath.Join(testdataDir, "alt-config.json")),
 	}
 
 	app := &cli.Command{

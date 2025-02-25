@@ -39,14 +39,14 @@ func readURI(uriString string) ([]byte, error) {
 }
 
 type URISourceCache[T any] struct {
-	file         string
+	uri          string
 	m            *T
 	unmarshaller func([]byte, any) error
 }
 
-func NewURISourceCache[T any](file string, f func([]byte, any) error) *URISourceCache[T] {
+func NewURISourceCache[T any](uri string, f func([]byte, any) error) *URISourceCache[T] {
 	return &URISourceCache[T]{
-		file:         file,
+		uri:          uri,
 		unmarshaller: f,
 	}
 }
@@ -54,10 +54,10 @@ func NewURISourceCache[T any](file string, f func([]byte, any) error) *URISource
 func (fsc *URISourceCache[T]) Get() T {
 	if fsc.m == nil {
 		res := new(T)
-		if b, err := readURI(fsc.file); err != nil {
-			tracef("failed to read uri %[1]q: %[2]v", fsc.file, err)
+		if b, err := readURI(fsc.uri); err != nil {
+			tracef("failed to read uri %[1]q: %[2]v", fsc.uri, err)
 		} else if err := fsc.unmarshaller(b, res); err != nil {
-			tracef("failed to unmarshal from file %[1]q: %[2]v", fsc.file, err)
+			tracef("failed to unmarshal from file %[1]q: %[2]v", fsc.uri, err)
 		} else {
 			fsc.m = res
 		}

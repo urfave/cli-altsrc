@@ -27,15 +27,15 @@ func TestYAML(t *testing.T) {
 
 	vsc := YAML(
 		"water_fountain.water",
-		"/dev/null/nonexistent.yaml",
-		configPath,
-		altConfigPath,
+		altsrc.StringSourcer("/dev/null/nonexistent.yaml"),
+		altsrc.StringSourcer(configPath),
+		altsrc.StringSourcer(altConfigPath),
 	)
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
 	r.True(ok)
 
-	yvs := vsc.Chain[0].(*yamlValueSource)
+	yvs := vsc.Chain[0]
 	r.Equal("yaml file \"/dev/null/nonexistent.yaml\" at key \"water_fountain.water\"", yvs.String())
-	r.Equal("&yamlValueSource{file:\"/dev/null/nonexistent.yaml\",keyPath:\"water_fountain.water\"}", yvs.GoString())
+	r.Equal("yamlValueSource{file:\"/dev/null/nonexistent.yaml\",keyPath:\"water_fountain.water\"}", yvs.GoString())
 }
