@@ -1,24 +1,13 @@
-package toml_test
+package toml
 
 import (
 	"context"
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
-	toml "github.com/urfave/cli-altsrc/toml"
 	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli/v3"
-)
-
-var (
-	testdataDir = func() string {
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-
-		return altsrc.MustTestdataDir(ctx)
-	}()
 )
 
 func ExampleTOML() {
@@ -33,12 +22,12 @@ func ExampleTOML() {
 			&cli.StringFlag{
 				Name:    "name",
 				Aliases: []string{"n"},
-				Sources: toml.TOML("greet.name", configFiles...),
+				Sources: TOML("greet.name", configFiles...),
 			},
 			&cli.IntFlag{
 				Name:    "enthusiasm",
 				Aliases: []string{"!"},
-				Sources: toml.TOML("greet.enthusiasm", configFiles...),
+				Sources: TOML("greet.enthusiasm", configFiles...),
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {

@@ -1,24 +1,13 @@
-package yaml_test
+package yaml
 
 import (
 	"context"
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	altsrc "github.com/urfave/cli-altsrc/v3"
-	yaml "github.com/urfave/cli-altsrc/yaml"
 	"github.com/urfave/cli/v3"
-)
-
-var (
-	testdataDir = func() string {
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-
-		return altsrc.MustTestdataDir(ctx)
-	}()
 )
 
 func ExampleYAML() {
@@ -33,12 +22,12 @@ func ExampleYAML() {
 			&cli.StringFlag{
 				Name:    "name",
 				Aliases: []string{"n"},
-				Sources: yaml.YAML("greet.name", configFiles...),
+				Sources: YAML("greet.name", configFiles...),
 			},
 			&cli.IntFlag{
 				Name:    "enthusiasm",
 				Aliases: []string{"!"},
-				Sources: yaml.YAML("greet.enthusiasm", configFiles...),
+				Sources: YAML("greet.enthusiasm", configFiles...),
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
