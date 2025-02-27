@@ -8,6 +8,6 @@ import (
 
 // YAML is a helper function to encapsulate a number of
 // yamlValueSource together as a cli.ValueSourceChain
-func YAML(key string, sources ...altsrc.Sourcer) cli.ValueSourceChain {
-	return altsrc.NewValueSourceChain(yaml.Unmarshal, "yaml", key, sources...)
+func YAML(key string, source altsrc.Sourcer) cli.ValueSource {
+	return altsrc.NewValueSource(yaml.Unmarshal, "yaml", key, source)
 }

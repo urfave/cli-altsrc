@@ -8,6 +8,6 @@ import (
 
 // JSON is a helper function that wraps the YAML helper function
 // and loads via yaml.Unmarshal
-func JSON(key string, sources ...altsrc.Sourcer) cli.ValueSourceChain {
-	return altsrc.NewValueSourceChain(yaml.Unmarshal, "json", key, sources...)
+func JSON(key string, source altsrc.Sourcer) cli.ValueSource {
+	return altsrc.NewValueSource(yaml.Unmarshal, "json", key, source)
 }

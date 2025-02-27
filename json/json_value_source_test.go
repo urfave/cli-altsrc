@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli-altsrc/v3/yaml"
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -26,12 +27,21 @@ func TestJSON(t *testing.T) {
 	configPath := filepath.Join(testdataDir, "test_config.json")
 	altConfigPath := filepath.Join(testdataDir, "test_alt_config.json")
 
-	vsc := yaml.YAML(
+	vs1 := yaml.YAML(
 		"water_fountain.water",
 		altsrc.StringSourcer("/dev/null/nonexistent.json"),
+	)
+	vs2 := yaml.YAML(
+		"water_fountain.water",
 		altsrc.StringSourcer(configPath),
+	)
+
+	vs3 := yaml.YAML(
+		"water_fountain.water",
 		altsrc.StringSourcer(altConfigPath),
 	)
+
+	vsc := cli.NewValueSourceChain(vs1, vs2, vs3)
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
 	r.True(ok)

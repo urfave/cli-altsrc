@@ -8,6 +8,6 @@ import (
 
 // TOML is a helper function to encapsulate a number of
 // tomlValueSource together as a cli.ValueSourceChain
-func TOML(key string, sources ...altsrc.Sourcer) cli.ValueSourceChain {
-	return altsrc.NewValueSourceChain(toml.Unmarshal, "toml", key, sources...)
+func TOML(key string, source altsrc.Sourcer) cli.ValueSource {
+	return altsrc.NewValueSource(toml.Unmarshal, "toml", key, source)
 }
