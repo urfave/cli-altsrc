@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	altsrc "github.com/urfave/cli-altsrc/v3"
-	yaml "github.com/urfave/cli-altsrc/yaml"
+	"github.com/urfave/cli-altsrc/v3/yaml"
 )
 
 var (

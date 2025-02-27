@@ -1,24 +1,13 @@
-package json_test
+package json
 
 import (
 	"context"
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
-	json "github.com/urfave/cli-altsrc/json"
 	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli/v3"
-)
-
-var (
-	testdataDir = func() string {
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-
-		return altsrc.MustTestdataDir(ctx)
-	}()
 )
 
 func ExampleJSON() {
@@ -33,12 +22,12 @@ func ExampleJSON() {
 			&cli.StringFlag{
 				Name:    "name",
 				Aliases: []string{"n"},
-				Sources: json.JSON("greet.name", configFiles...),
+				Sources: JSON("greet.name", configFiles...),
 			},
 			&cli.IntFlag{
 				Name:    "enthusiasm",
 				Aliases: []string{"!"},
-				Sources: json.JSON("greet.enthusiasm", configFiles...),
+				Sources: JSON("greet.enthusiasm", configFiles...),
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
