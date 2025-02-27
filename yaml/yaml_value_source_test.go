@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	altsrc "github.com/urfave/cli-altsrc/v3"
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -25,12 +26,21 @@ func TestYAML(t *testing.T) {
 	configPath := filepath.Join(testdataDir, "test_config.yaml")
 	altConfigPath := filepath.Join(testdataDir, "test_alt_config.yaml")
 
-	vsc := YAML(
+	vs1 := YAML(
 		"water_fountain.water",
 		altsrc.StringSourcer("/dev/null/nonexistent.yaml"),
+	)
+	vs2 := YAML(
+		"water_fountain.water",
 		altsrc.StringSourcer(configPath),
+	)
+	vs3 := YAML(
+		"water_fountain.water",
 		altsrc.StringSourcer(altConfigPath),
 	)
+
+	vsc := cli.NewValueSourceChain(vs1, vs2, vs3)
+
 	v, ok := vsc.Lookup()
 	r.Equal("false", v)
 	r.True(ok)

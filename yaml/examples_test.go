@@ -22,12 +22,12 @@ func ExampleYAML() {
 			&cli.StringFlag{
 				Name:    "name",
 				Aliases: []string{"n"},
-				Sources: YAML("greet.name", configFiles...),
+				Sources: cli.NewValueSourceChain(YAML("greet.name", configFiles[0]), YAML("greet.name", configFiles[1])),
 			},
 			&cli.IntFlag{
 				Name:    "enthusiasm",
 				Aliases: []string{"!"},
-				Sources: YAML("greet.enthusiasm", configFiles...),
+				Sources: cli.NewValueSourceChain(YAML("greet.enthusiasm", configFiles[0]), YAML("greet.enthusiasm", configFiles[1])),
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {

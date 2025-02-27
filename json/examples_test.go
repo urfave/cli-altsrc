@@ -22,12 +22,12 @@ func ExampleJSON() {
 			&cli.StringFlag{
 				Name:    "name",
 				Aliases: []string{"n"},
-				Sources: JSON("greet.name", configFiles...),
+				Sources: cli.NewValueSourceChain(JSON("greet.name", configFiles[0]), JSON("greet.name", configFiles[1])),
 			},
 			&cli.IntFlag{
 				Name:    "enthusiasm",
 				Aliases: []string{"!"},
-				Sources: JSON("greet.enthusiasm", configFiles...),
+				Sources: cli.NewValueSourceChain(JSON("greet.enthusiasm", configFiles[0]), JSON("greet.enthusiasm", configFiles[1])),
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
