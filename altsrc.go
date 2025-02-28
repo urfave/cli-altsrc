@@ -6,8 +6,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-
-	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -107,14 +105,14 @@ func (s StringPtrSourcer) SourceURI() string {
 	return *s.ptr
 }
 
-type valueSource struct {
+type ValueSource struct {
 	key     string
 	desc    string
 	sourcer Sourcer
 	um      func([]byte, any) error
 }
 
-func (vs *valueSource) Lookup() (string, bool) {
+func (vs *ValueSource) Lookup() (string, bool) {
 	maafsc := NewMapAnyAnyURISourceCache(vs.sourcer.SourceURI(), vs.um)
 	if v, ok := NestedVal(vs.key, maafsc.Get()); ok {
 		return fmt.Sprintf("%[1]v", v), ok
@@ -123,31 +121,19 @@ func (vs *valueSource) Lookup() (string, bool) {
 	return "", false
 }
 
-func (vs *valueSource) String() string {
+func (vs *ValueSource) String() string {
 	return fmt.Sprintf("%s file %[2]q at key %[3]q", vs.desc, vs.sourcer.SourceURI(), vs.key)
 }
 
-func (vs *valueSource) GoString() string {
+func (vs *ValueSource) GoString() string {
 	return fmt.Sprintf("%sValueSource{file:%[2]q,keyPath:%[3]q}", vs.desc, vs.sourcer.SourceURI(), vs.key)
 }
 
-func NewValueSource(f func([]byte, any) error, desc string, key string, uriSrc Sourcer) cli.ValueSource {
-	return &valueSource{
+func NewValueSource(f func([]byte, any) error, desc string, key string, uriSrc Sourcer) *ValueSource {
+	return &ValueSource{
 		sourcer: uriSrc,
 		key:     key,
 		desc:    desc,
 		um:      f,
-	}
-}
-
-func NewValueSourceChain(f func([]byte, any) error, desc string, key string, uris ...Sourcer) cli.ValueSourceChain {
-	vs := []cli.ValueSource{}
-
-	for _, uri := range uris {
-		vs = append(vs, NewValueSource(f, desc, key, uri))
-	}
-
-	return cli.ValueSourceChain{
-		Chain: vs,
 	}
 }
