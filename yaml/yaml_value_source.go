@@ -2,7 +2,7 @@ package yaml
 
 import (
 	altsrc "github.com/urfave/cli-altsrc/v3"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 )
 
 // YAML is a helper function to encapsulate a number of

@@ -2,7 +2,7 @@ package json
 
 import (
 	altsrc "github.com/urfave/cli-altsrc/v3"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 )
 
 // JSON is a helper function that wraps the YAML helper function
