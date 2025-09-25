@@ -1,0 +1,13 @@
+{
+  "slice_types": {
+    "numbers": [
+      1,
+      2,
+      3
+    ],
+    "strings": [
+      "word",
+      "this is a sentence"
+    ]
+  }
+}
