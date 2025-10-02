@@ -50,3 +50,35 @@ func TestJSON(t *testing.T) {
 	r.Equal("yaml file \"/dev/null/nonexistent.json\" at key \"water_fountain.water\"", yvs.String())
 	r.Equal("yamlValueSource{file:\"/dev/null/nonexistent.json\",keyPath:\"water_fountain.water\"}", yvs.GoString())
 }
+
+func TestJSONSlice(t *testing.T) {
+	r := require.New(t)
+
+	configPath := filepath.Join(testdataDir, "slice.json")
+
+	t.Run("numbers", func(t *testing.T) {
+		vs := JSON(
+			"slice_types.numbers",
+			altsrc.StringSourcer(configPath),
+		)
+
+		vsc := cli.NewValueSourceChain(vs)
+
+		v, ok := vsc.Lookup()
+		r.Equal("1,2,3", v)
+		r.True(ok)
+	})
+
+	t.Run("strings", func(t *testing.T) {
+		vs := JSON(
+			"slice_types.strings",
+			altsrc.StringSourcer(configPath),
+		)
+
+		vsc := cli.NewValueSourceChain(vs)
+
+		v, ok := vsc.Lookup()
+		r.Equal("word,this is a sentence", v)
+		r.True(ok)
+	})
+}

@@ -50,3 +50,35 @@ func TestTOML(t *testing.T) {
 	r.Equal("toml file \"/dev/null/nonexistent.toml\" at key \"water_fountain.water\"", tvs.String())
 	r.Equal("tomlValueSource{file:\"/dev/null/nonexistent.toml\",keyPath:\"water_fountain.water\"}", tvs.GoString())
 }
+
+func TestTOMLSlice(t *testing.T) {
+	r := require.New(t)
+
+	configPath := filepath.Join(testdataDir, "slice.toml")
+
+	t.Run("numbers", func(t *testing.T) {
+		vs := TOML(
+			"slice_types.numbers",
+			altsrc.StringSourcer(configPath),
+		)
+
+		vsc := cli.NewValueSourceChain(vs)
+
+		v, ok := vsc.Lookup()
+		r.Equal("1,2,3", v)
+		r.True(ok)
+	})
+
+	t.Run("strings", func(t *testing.T) {
+		vs := TOML(
+			"slice_types.strings",
+			altsrc.StringSourcer(configPath),
+		)
+
+		vsc := cli.NewValueSourceChain(vs)
+
+		v, ok := vsc.Lookup()
+		r.Equal("word,this is a sentence", v)
+		r.True(ok)
+	})
+}
