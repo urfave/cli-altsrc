@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/BurntSushi/toml v1.5.0
 	github.com/stretchr/testify v1.11.1
-	github.com/urfave/cli/v3 v3.5.0
+	github.com/urfave/cli/v3 v3.6.0
 	go.yaml.in/yaml/v3 v3.0.4
 )
 
