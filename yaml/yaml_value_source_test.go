@@ -50,6 +50,23 @@ func TestYAML(t *testing.T) {
 	r.Equal("yamlValueSource{file:\"/dev/null/nonexistent.yaml\",keyPath:\"water_fountain.water\"}", yvs.GoString())
 }
 
+func TestYAMLStringMap(t *testing.T) {
+	r := require.New(t)
+
+	configPath := filepath.Join(testdataDir, "map.yaml")
+	vs := YAML(
+		"map_types.labels",
+		altsrc.StringSourcer(configPath),
+	)
+
+	v, ok := cli.NewValueSourceChain(vs).Lookup()
+	r.True(ok)
+
+	m := cli.NewStringMap(nil)
+	r.NoError(m.Set(v))
+	r.Equal(map[string]string{"env": "prod", "team": "platform"}, m.Value())
+}
+
 func TestYAMLSlice(t *testing.T) {
 	r := require.New(t)
 

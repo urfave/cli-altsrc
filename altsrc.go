@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -116,27 +118,36 @@ type ValueSource struct {
 func (vs *ValueSource) Lookup() (string, bool) {
 	maafsc := NewMapAnyAnyURISourceCache(vs.sourcer.SourceURI(), vs.um)
 	if v, ok := NestedVal(vs.key, maafsc.Get()); ok {
-		// Use reflection to check if 'v' is a slice
-		if val := reflect.ValueOf(v); val.Kind() == reflect.Slice {
-			// It's a slice, so create a new string slice of the same size
-			stringSlice := make([]string, val.Len())
-
-			// Iterate over the slice elements
-			for i := 0; i < val.Len(); i++ {
-				// Get the element at index i and convert it to a string
-				elem := val.Index(i).Interface()
-				stringSlice[i] = fmt.Sprintf("%v", elem)
-			}
-
-			// Join the string representations and return
-			return strings.Join(stringSlice, ","), true
-		}
-
-		// Fall back to standard string representation if not a slice
-		return fmt.Sprintf("%[1]v", v), ok
+		return lookupString(v), true
 	}
 
 	return "", false
+}
+
+func lookupString(v any) string {
+	val := reflect.ValueOf(v)
+	if !val.IsValid() {
+		return ""
+	}
+
+	if val.Kind() == reflect.Slice {
+		stringSlice := make([]string, val.Len())
+		for i := 0; i < val.Len(); i++ {
+			stringSlice[i] = fmt.Sprintf("%v", val.Index(i).Interface())
+		}
+		return strings.Join(stringSlice, ",")
+	}
+
+	if val.Kind() == reflect.Map {
+		stringMap := make(map[string]string, val.Len())
+		iter := val.MapRange()
+		for iter.Next() {
+			stringMap[fmt.Sprintf("%v", iter.Key().Interface())] = fmt.Sprintf("%v", iter.Value().Interface())
+		}
+		return cli.NewStringMap(stringMap).Serialize()
+	}
+
+	return fmt.Sprintf("%[1]v", v)
 }
 
 func (vs *ValueSource) String() string {
