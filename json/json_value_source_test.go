@@ -51,6 +51,23 @@ func TestJSON(t *testing.T) {
 	r.Equal("yamlValueSource{file:\"/dev/null/nonexistent.json\",keyPath:\"water_fountain.water\"}", yvs.GoString())
 }
 
+func TestJSONStringMap(t *testing.T) {
+	r := require.New(t)
+
+	configPath := filepath.Join(testdataDir, "map.json")
+	vs := JSON(
+		"map_types.labels",
+		altsrc.StringSourcer(configPath),
+	)
+
+	v, ok := cli.NewValueSourceChain(vs).Lookup()
+	r.True(ok)
+
+	m := cli.NewStringMap(nil)
+	r.NoError(m.Set(v))
+	r.Equal(map[string]string{"env": "prod", "team": "platform"}, m.Value())
+}
+
 func TestJSONSlice(t *testing.T) {
 	r := require.New(t)
 

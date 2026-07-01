@@ -51,6 +51,23 @@ func TestTOML(t *testing.T) {
 	r.Equal("tomlValueSource{file:\"/dev/null/nonexistent.toml\",keyPath:\"water_fountain.water\"}", tvs.GoString())
 }
 
+func TestTOMLStringMap(t *testing.T) {
+	r := require.New(t)
+
+	configPath := filepath.Join(testdataDir, "map.toml")
+	vs := TOML(
+		"map_types.labels",
+		altsrc.StringSourcer(configPath),
+	)
+
+	v, ok := cli.NewValueSourceChain(vs).Lookup()
+	r.True(ok)
+
+	m := cli.NewStringMap(nil)
+	r.NoError(m.Set(v))
+	r.Equal(map[string]string{"env": "prod", "team": "platform"}, m.Value())
+}
+
 func TestTOMLSlice(t *testing.T) {
 	r := require.New(t)
 
