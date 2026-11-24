@@ -1,0 +1,25 @@
+bools:
+  yes_val: yes
+  Yes_val: Yes
+  YES_val: YES
+  y_val: y
+  Y_val: Y
+  on_val: on
+  On_val: On
+  ON_val: ON
+  no_val: no
+  No_val: No
+  NO_val: NO
+  n_val: n
+  N_val: N
+  off_val: off
+  Off_val: Off
+  OFF_val: OFF
+  true_val: true
+  True_val: True
+  false_val: false
+  False_val: False
+  quoted_no: "no"
+  quoted_yes: 'yes'
+  plain_word: maybe
+  number: 42

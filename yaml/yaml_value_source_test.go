@@ -81,3 +81,32 @@ func TestYAMLSlice(t *testing.T) {
 		r.True(ok)
 	})
 }
+
+func TestYAMLLegacyBooleans(t *testing.T) {
+	r := require.New(t)
+
+	configPath := filepath.Join(testdataDir, "bool.yaml")
+
+	cases := map[string]string{
+		"yes_val": "true", "Yes_val": "true", "YES_val": "true",
+		"y_val": "true", "Y_val": "true",
+		"on_val": "true", "On_val": "true", "ON_val": "true",
+		"no_val": "false", "No_val": "false", "NO_val": "false",
+		"n_val": "false", "N_val": "false",
+		"off_val": "false", "Off_val": "false", "OFF_val": "false",
+		"true_val": "true", "True_val": "true",
+		"false_val": "false", "False_val": "false",
+		// Quoted scalars remain strings
+		"quoted_no": "no", "quoted_yes": "yes",
+		// Non-boolean scalars are untouched
+		"plain_word": "maybe", "number": "42",
+	}
+
+	for key, want := range cases {
+		vs := YAML("bools."+key, altsrc.StringSourcer(configPath))
+		vsc := cli.NewValueSourceChain(vs)
+		v, ok := vsc.Lookup()
+		r.True(ok, "key %s should resolve", key)
+		r.Equal(want, v, "key %s", key)
+	}
+}
